@@ -32,7 +32,7 @@ class Massage extends Model
      {
         return $this->belongsToMany(User::class , 'recipients')
             ->withPivot([
-                'read_at' , 'dlelted_at'
+                'read_at' , 'deleted_at'
             ]);
      }
 }

@@ -12,7 +12,7 @@ class Participant extends Pivot
 
     public $timestamps = false;
     protected $cast =[
-        'joined_at' , 'datetime'
+        'joined_at' => 'datetime'
     ];
 
 

@@ -10,7 +10,7 @@ class Conversation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id' , 'lable','last_massage_id',
+        'user_id' , 'lable','last_message_id',
     ];
 
     public function participants()
@@ -21,9 +21,9 @@ class Conversation extends Model
             ]);
     }
 
-    public function masseges()
+    public function messeges()
     {
-        return $this->hasMany(Massage::class,'conversation_id')
+        return $this->hasMany(Message::class,'conversation_id')
             ->latest();
     }
 
@@ -34,7 +34,7 @@ class Conversation extends Model
 
     public function lastMessage()
     {
-        return $this->hasMany(Massage::class,'last_massage_id','id')
+        return $this->hasMany(Message::class,'last_massage_id','id')
             ->withDefault();
     }
 }

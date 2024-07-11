@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('conversations', function (Blueprint $table) {
-            $table->foreignId('last_massage_id')
+            $table->foreignId('last_message_id')
                 ->nullable()
-                ->constrained('massages')
+                ->constrained('messages')
                 ->nullOnDelete();
         });
     }
@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('conversations', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('last_massage_id');
+            $table->dropConstrainedForeignId('last_message_id');
         });
     }
 };

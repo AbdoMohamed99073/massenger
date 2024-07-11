@@ -15,13 +15,13 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->foreignId('massage_id')
-                ->constrained('massages')
+            $table->foreignId('message_id')
+                ->constrained('messages')
                 ->cascadeOnDelete();
             $table->timestamp('read_at')
                 ->nullable();
             $table->softDeletes();
-            $table->primary(['massage_id','user_id']);
+            $table->primary(['message_id','user_id']);
 
         });
     }

@@ -19,7 +19,7 @@ class Recipient extends Pivot
 
     public function massege()
     {
-        return $this->belongsTo(Massage::class);
+        return $this->belongsTo(Message::class);
     }
     public function user()
     {

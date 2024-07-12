@@ -10,18 +10,18 @@ class Conversation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id' , 'lable','last_message_id',
+        'user_id' , 'lable','type', 'last_message_id',
     ];
 
     public function participants()
     {
         return $this->belongsToMany(User::class,'participants')
             ->withPivot([
-                'read_at' , 'role'
+                'joined_at' , 'role'
             ]);
     }
 
-    public function messeges()
+    public function messages()
     {
         return $this->hasMany(Message::class,'conversation_id')
             ->latest();

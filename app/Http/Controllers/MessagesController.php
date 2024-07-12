@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\Recipient;
+use App\Models\User;
 use Exception;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use PHPUnit\Event\Code\Throwable;
 
 class MessagesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index($id)
+    public function index($id = null)
     {
         $user = Auth::user();
         $converstion = $user->conversations()->findOrFail($id);
@@ -49,7 +50,7 @@ class MessagesController extends Controller
                 'exists:users,id',
             ],
         ]);
-        $user = Auth::user();
+        $user =  User::find(1); //Auth::user();
         $conversation_id = $request->post('conversation_id');
         $user_id = $request->post('user_id');
         
@@ -58,13 +59,29 @@ class MessagesController extends Controller
             if ($conversation_id) {
                 $conversation = $user->conversations()->findOrFail($conversation_id);
             }else{
-                $conversation = Conversation::whereHas('participants',function(Builder $builder) use ($user_id , $user){
-                    $builder->where('user_id', '=', $user_id);
-                });
+                $conversation = Conversation::where('type' , '=' , 'peer')
+                    ->whereHas('participants',function(Builder $builder) use ($user_id , $user){
+                    $builder->join('participants as participants2', 'participants2.conversation_id' , '=' , 'participants.conversation_id')
+                        ->where('participants.user_id', '=', $user_id)
+                        ->where('participants2.user_id', '=', $user_id);
+                })->first();
+
+                if(!$conversation)
+                {
+                    $conversation = Conversation::create([
+                        'user_id' => $user_id ,
+                        'type' => 'peer'
+                    ]);
+
+                    $conversation->participants()->attach([
+                        $user_id =>['joined_at' =>now()],
+                        $user->id =>['joined_at' =>now()],
+                    ]);
+                }
             }
             $message = $conversation->messages()->create([
                 'user_id' => $user->id,
-                'bady' => $request->post('message'),
+                'body' => $request->post('message'),
             ]);
 
             DB::statement('
@@ -72,12 +89,20 @@ class MessagesController extends Controller
             SELECT user_id , ? FROM participants
             WHERE conversation_id = ?
         ', [$message->id, $conversation->id]);
+
+        $conversation->update([
+            'last_message_id' => $message->id,
+        ]);
             
             DB::commit();
 
         }catch(Exception $e){
             DB::rollBack();
+
+            throw $e;
         }
+
+        return $message;
     }
 
     /**
@@ -101,6 +126,14 @@ class MessagesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Recipient::where([
+            'user_id' => Auth::id(),
+            'message_id' =>$id
+        ])->delete();
+
+        return [
+            'message' =>'deleted'
+        ];
     }
+
 }

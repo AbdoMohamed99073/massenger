@@ -16,7 +16,7 @@ class Participant extends Pivot
     ];
 
 
-    public function conversation()
+    public function conversations()
     {
         return $this->belongsTo(Conversation::class);
     }

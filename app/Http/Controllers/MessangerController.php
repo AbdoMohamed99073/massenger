@@ -8,20 +8,32 @@ use Illuminate\Support\Facades\Auth;
 
 class MessangerController extends Controller
 {
-    public function index()
+    public function index($id = null)
     {
         $user =  Auth::user();
         $friend = User::where('id' , '<>' , $user->id)
             ->orderBy('name')
             ->paginate();
 
-        $chats = $user->conversations()->with(['lastMessage' , 'participants'])->get();
+        $chats = $user->conversations()->with([
+            'lastMessage' ,
+            'participants' => function($builder) use ($user){
+                $builder->where('id' , '<>' , $user->id);
+            }])->get();
 
-        dd($chats);
-/*
+        $messages = [];
+        if($id)
+        {
+            $chat = $chats->where('id' , $id)->first();
+            $messages = $chat->messages()->with('user')->paginate();
+        }
+
+
         return view('Messanger',[
             'friends' => $friend ,
-            'chats' => $chats
-        ]);*/
+            'chats' => $chats,
+            'messages' =>$messages,
+
+        ]);
     }
 }

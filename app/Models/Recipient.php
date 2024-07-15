@@ -17,7 +17,7 @@ class Recipient extends Pivot
     ];
 
 
-    public function massege()
+    public function masseges()
     {
         return $this->belongsTo(Message::class);
     }

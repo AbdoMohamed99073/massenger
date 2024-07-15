@@ -23,8 +23,7 @@ class Conversation extends Model
 
     public function messages()
     {
-        return $this->hasMany(Message::class,'conversation_id')
-            ->latest();
+        return $this->hasMany(Message::class,'conversation_id');
     }
 
     public function user()
@@ -34,7 +33,7 @@ class Conversation extends Model
 
     public function lastMessage()
     {
-        return $this->hasMany(Message::class,'last_massage_id','id')
-            ->withDefault();
+        return $this->belongsTo(Message::class,'last_message_id')
+                    ->withDefault();
     }
 }

@@ -51,14 +51,14 @@ class MessagesController extends Controller
                 'exists:users,id',
             ],
         ]);
-        $user =  User::find(2); //Auth::user();
+        $user =  Auth::user();
         $conversation_id = $request->post('conversation_id');
         $user_id = $request->post('user_id');
-        
         DB::beginTransaction();
         try {
             if ($conversation_id) {
                 $conversation = $user->conversations()->findOrFail($conversation_id);
+                
             }else{
                 $conversation = Conversation::where('type' , '=' , 'peer')
                     ->whereHas('participants',function(Builder $builder) use ($user_id , $user){

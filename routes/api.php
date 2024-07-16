@@ -10,7 +10,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
-//Route::middleware('auth:sanctum')->group(function(){
+Route::middleware('auth:sanctum')->group(function(){
     //conversation routes
     Route::get('/conversations',[ConversationController::class,'index']);
     Route::get('/conversations/{conversation}',[ConversationController::class,'show']);
@@ -20,8 +20,9 @@ Route::get('/user', function (Request $request) {
     
     //messages routes
     Route::get('/conversations/{id}/messages',[MessagesController::class,'index']);
-    Route::post('/messages',[MessagesController::class,'store']);
+    Route::post('/messages',[MessagesController::class,'store'])
+        ->name('storemessage');
     Route::delete('/messages/{id}',[MessagesController::class,'destroy']);
 
-//});
+});
 
